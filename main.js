@@ -6,55 +6,6 @@ outline:
 - output ASCII
 - option to copy to clipboard?
 */
-var Pixel = (function () {
-    function Pixel(red, green, blue, alpha) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-        this.r = red;
-        this.g = green;
-        this.b = blue;
-        this.a = alpha;
-        this.ascii = Pixel.convert(this, "luminosity");
-    }
-    Pixel.convert = function (pix, avgMethod) {
-        var r = pix.r;
-        var g = pix.g;
-        var b = pix.b;
-        // convert to greyscale, there are three possible methods - http://www.johndcook.com/blog/2009/08/24/algorithms-convert-color-grayscale/
-        var greyscale = 0;
-        if (avgMethod == "lightness")
-            greyscale = Pixel.lightness(r, g, b);
-        else if (avgMethod == "average")
-            greyscale = Pixel.average(r, g, b);
-        else if (avgMethod == "luminosity")
-            greyscale = Pixel.luminosity(r, g, b);
-        // convert to ascii
-        if (greyscale > 240)
-            return "'";
-        else if (greyscale > 200)
-            return ".";
-        else if (greyscale > 150)
-            return ",";
-        else if (greyscale > 100)
-            return "~";
-        else if (greyscale > 50)
-            return "+";
-        else
-            return "#";
-    };
-    Pixel.lightness = function (r, g, b) {
-        return (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
-    };
-    Pixel.average = function (r, g, b) {
-        return (r + g + b) / 3;
-    };
-    Pixel.luminosity = function (r, g, b) {
-        return 0.21 * r + 0.72 * g + 0.07 * b;
-    };
-    return Pixel;
-}());
 function onUpload(ev) {
     // get the file
     var files = ev.srcElement["files"];
@@ -66,11 +17,11 @@ function onUpload(ev) {
     var reader = new FileReader();
     reader.addEventListener("load", function () {
         img.src = reader.result;
-        processImg(img);
+        processImg(img, "luminosity");
     });
     reader.readAsDataURL(file);
 }
-function processImg(img) {
+function processImg(img, greyScaleMethod) {
     // draw the image to the screen
     canvas.style.width = img.width + "px";
     canvas.style.height = img.height + "px";
@@ -79,20 +30,45 @@ function processImg(img) {
     ctx.drawImage(img, 0, 0);
     // get pixels
     var imgData = ctx.getImageData(0, 0, img.width, img.height).data; // a long list of repeating r,g,b,a numbers
-    var pixelData = new Array();
-    // create Pixel objects for each pixel
-    for (var i = 0; i < imgData.length - 3; i += 4) {
-        var pixel = new Pixel(imgData[i], imgData[i + 1], imgData[i + 2], imgData[i + 3]);
-        pixelData.push(pixel);
-    }
-    // create output string
     var outString = "";
-    for (var y = 0; y < img.height; y++) {
-        for (var x = 0; x < img.width; x++) {
-            var pixel = pixelData.shift(); // get the first element
-            outString += pixel.ascii;
+    var x = 0;
+    var y = 0;
+    for (var i = 0; i < imgData.length - 3; i += 4) {
+        var r = imgData[i];
+        var g = imgData[i + 1];
+        var b = imgData[i + 2];
+        var a = imgData[i + 3];
+        // convert to grayscale, there are three possible methods - http://www.johndcook.com/blog/2009/08/24/algorithms-convert-color-grayscale/
+        var greyscale = 0;
+        if (greyScaleMethod == "lightness")
+            greyscale = (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
+        else if (greyScaleMethod == "average")
+            greyscale = (r + g + b) / 3;
+        else if (greyScaleMethod == "luminosity")
+            greyscale = 0.21 * r + 0.72 * g + 0.07 * b;
+        greyscale = greyscale * a / 255; // scale based on alpha
+        // convert to ascii
+        var ascii = "";
+        if (greyscale > 240)
+            ascii = "'";
+        else if (greyscale > 200)
+            ascii = ".";
+        else if (greyscale > 150)
+            ascii = ",";
+        else if (greyscale > 100)
+            ascii = "~";
+        else if (greyscale > 50)
+            ascii = "+";
+        else
+            ascii = "#";
+        // add ascii to output string
+        outString += ascii;
+        x++;
+        if (x == img.width) {
+            outString += "<br>";
+            x = 0;
+            y++;
         }
-        outString += "<br>";
     }
     // print outstring to document
     document.getElementById("output").innerHTML = outString;
