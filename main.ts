@@ -19,12 +19,12 @@ function onUpload(ev: Event)
     let reader: FileReader = new FileReader();
     reader.addEventListener("load", ()=>{
         img.src=reader.result;
-        processImg(img, "luminosity");
+        processImg(img);
     });
     reader.readAsDataURL(file);
 }
 
-function processImg(img: HTMLImageElement, greyScaleMethod: string)
+function processImg(img: HTMLImageElement)
 {
     // draw the image to the screen
     canvas.style.width = img.width + "px";
@@ -68,15 +68,25 @@ function processImg(img: HTMLImageElement, greyScaleMethod: string)
     }
     // print outstring to document
     document.getElementById("output").innerHTML = outString;
-    
+}
 
+function setGreyscaleMethod(fileInput: HTMLElement, method: string)
+{
+    greyScaleMethod = method;
+    let event = new Event("change");
+    fileInput.dispatchEvent(event);
 }
 
 function init()
 {
-    document.getElementById("file-input").onchange = onUpload;
+    let fileInput: HTMLElement = document.getElementById("file-input");
+    fileInput.onchange = onUpload;
+    document.getElementById("check-luminosity").onclick = function() {setGreyscaleMethod(fileInput, "luminosity");};
+    document.getElementById("check-lightness").onclick = function() {setGreyscaleMethod(fileInput, "lightness");};
+    document.getElementById("check-average").onclick = function() {setGreyscaleMethod(fileInput, "average");};
 }
 
 let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("img-canvas");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
+let greyScaleMethod: string = "luminosity";
 init();

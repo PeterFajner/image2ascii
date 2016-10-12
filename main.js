@@ -17,11 +17,11 @@ function onUpload(ev) {
     var reader = new FileReader();
     reader.addEventListener("load", function () {
         img.src = reader.result;
-        processImg(img, "luminosity");
+        processImg(img);
     });
     reader.readAsDataURL(file);
 }
-function processImg(img, greyScaleMethod) {
+function processImg(img) {
     // draw the image to the screen
     canvas.style.width = img.width + "px";
     canvas.style.height = img.height + "px";
@@ -73,9 +73,19 @@ function processImg(img, greyScaleMethod) {
     // print outstring to document
     document.getElementById("output").innerHTML = outString;
 }
+function setGreyscaleMethod(fileInput, method) {
+    greyScaleMethod = method;
+    var event = new Event("change");
+    fileInput.dispatchEvent(event);
+}
 function init() {
-    document.getElementById("file-input").onchange = onUpload;
+    var fileInput = document.getElementById("file-input");
+    fileInput.onchange = onUpload;
+    document.getElementById("check-luminosity").onclick = function () { setGreyscaleMethod(fileInput, "luminosity"); };
+    document.getElementById("check-lightness").onclick = function () { setGreyscaleMethod(fileInput, "lightness"); };
+    document.getElementById("check-average").onclick = function () { setGreyscaleMethod(fileInput, "average"); };
 }
 var canvas = document.getElementById("img-canvas");
 var ctx = canvas.getContext("2d");
+var greyScaleMethod = "luminosity";
 init();
