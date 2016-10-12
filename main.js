@@ -23,17 +23,20 @@ function onUpload(ev) {
 }
 function processImg(img) {
     // draw the image to the screen
-    canvas.style.width = img.width + "px";
-    canvas.style.height = img.height + "px";
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
+    var scaledWidth = Math.floor(img.width / imgScale);
+    var scaledHeight = Math.floor(img.height / imgScale);
+    canvas.style.width = scaledWidth + "px";
+    canvas.style.height = scaledHeight + "px";
+    canvas.width = scaledWidth;
+    canvas.height = scaledHeight;
+    ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
     // get pixels
-    var imgData = ctx.getImageData(0, 0, img.width, img.height).data; // a long list of repeating r,g,b,a numbers
+    var imgData = ctx.getImageData(0, 0, scaledWidth, scaledHeight).data; // a long list of repeating r,g,b,a numbers
     var outString = "";
     var x = 0;
     var y = 0;
     for (var i = 0; i < imgData.length - 3; i += 4) {
+        // get colour values
         var r = imgData[i];
         var g = imgData[i + 1];
         var b = imgData[i + 2];
@@ -64,10 +67,10 @@ function processImg(img) {
         // add ascii to output string
         outString += ascii;
         x++;
-        if (x == img.width) {
-            outString += "<br>";
+        if (x >= scaledWidth) {
             x = 0;
             y++;
+            outString += "<br>";
         }
     }
     // print outstring to document
@@ -75,17 +78,26 @@ function processImg(img) {
 }
 function setGreyscaleMethod(fileInput, method) {
     greyScaleMethod = method;
+}
+function refresh() {
     var event = new Event("change");
     fileInput.dispatchEvent(event);
 }
-function init() {
-    var fileInput = document.getElementById("file-input");
-    fileInput.onchange = onUpload;
-    document.getElementById("check-luminosity").onclick = function () { setGreyscaleMethod(fileInput, "luminosity"); };
-    document.getElementById("check-lightness").onclick = function () { setGreyscaleMethod(fileInput, "lightness"); };
-    document.getElementById("check-average").onclick = function () { setGreyscaleMethod(fileInput, "average"); };
+function sliderChanged() {
+    imgScale = -parseInt(sliderScale.value);
+    sliderScaleDisplay.innerHTML = "1:" + imgScale;
+    refresh();
 }
 var canvas = document.getElementById("img-canvas");
 var ctx = canvas.getContext("2d");
 var greyScaleMethod = "luminosity";
-init();
+var fileInput = document.getElementById("file-input");
+var imgScale = 1; // denominator of scale; eg imgScale==5 is a scale of 1/5
+fileInput.onchange = onUpload;
+document.getElementById("check-luminosity").onclick = function () { greyScaleMethod = "luminosity"; refresh; };
+document.getElementById("check-lightness").onclick = function () { greyScaleMethod = "lightness"; refresh; };
+document.getElementById("check-average").onclick = function () { greyScaleMethod = "average"; refresh; };
+var sliderScale = document.getElementById("slider-scale");
+var sliderScaleDisplay = document.getElementById("slider-scale-display");
+sliderScale.onchange = sliderChanged;
+sliderChanged();

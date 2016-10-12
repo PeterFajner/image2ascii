@@ -27,17 +27,21 @@
 <body>
     <h1>Input</h1>
     <input type="file" accept="image/*" id="file-input"><br>
-    <p>Greyscale Type:</p> <br>
+    <p>Greyscale Type:</p>
     <input type="radio" name="greyscale" value="luminosity" id="check-luminosity" checked> Luminosity <br>
     <input type="radio" name="greyscale" value="lightness" id="check-lightness"> Lightness <br>
     <input type="radio" name="greyscale" value="average" id="check-average"> Average <br>
+    <p>Image Scale:</p>
+    <input type="range" name="scale" id="slider-scale" min="-20" max="-1" step="1" value="-1">
+    <span id="slider-scale-display"></span>
     <br>
     <canvas id="img-canvas"></canvas>
     <h1>Output</h1>
     <div id="output"></div>
     <footer>
-        <p><a href="https://pfaj.ca">Peter Fajner 2016</a></p>
-        <p>Font: "<a href="http://strlen.com/square">Square</a>" by Wouter van Oortmerssen, licensed under <a href="https://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported</a></p>
+        <h1>Credits</h2>
+            <p><a href="https://pfaj.ca">Peter Fajner 2016</a></p>
+            <p>Font: "<a href="http://strlen.com/square">Square</a>" by Wouter van Oortmerssen, licensed under <a href="https://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported</a></p>
     </footer>
     <script type="text/javascript" src="main.js"></script>
 </body>

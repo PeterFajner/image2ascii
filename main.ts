@@ -27,18 +27,21 @@ function onUpload(ev: Event)
 function processImg(img: HTMLImageElement)
 {
     // draw the image to the screen
-    canvas.style.width = img.width + "px";
-    canvas.style.height = img.height + "px";
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
+    let scaledWidth: number = Math.floor(img.width/imgScale);
+    let scaledHeight: number = Math.floor(img.height/imgScale);
+    canvas.style.width = scaledWidth + "px";
+    canvas.style.height = scaledHeight + "px";
+    canvas.width = scaledWidth;
+    canvas.height = scaledHeight;
+    ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
 
     // get pixels
-    let imgData: Uint8ClampedArray = ctx.getImageData(0, 0, img.width, img.height).data; // a long list of repeating r,g,b,a numbers
+    let imgData: Uint8ClampedArray = ctx.getImageData(0, 0, scaledWidth, scaledHeight).data; // a long list of repeating r,g,b,a numbers
     let outString = "";
     let x: number = 0;
     let y: number = 0;
     for (let i: number = 0; i < imgData.length - 3; i += 4) {
+        // get colour values
         let r: number = imgData[i];
         let g: number = imgData[i+1];
         let b: number = imgData[i+2];
@@ -60,10 +63,10 @@ function processImg(img: HTMLImageElement)
         // add ascii to output string
         outString += ascii;
         x++;
-        if (x == img.width) {
-            outString += "<br>"
+        if (x >= scaledWidth) {
             x = 0;
             y++;
+            outString += "<br>";
         }
     }
     // print outstring to document
@@ -73,20 +76,32 @@ function processImg(img: HTMLImageElement)
 function setGreyscaleMethod(fileInput: HTMLElement, method: string)
 {
     greyScaleMethod = method;
+    
+}
+
+function refresh()
+{
     let event = new Event("change");
     fileInput.dispatchEvent(event);
 }
 
-function init()
+function sliderChanged()
 {
-    let fileInput: HTMLElement = document.getElementById("file-input");
-    fileInput.onchange = onUpload;
-    document.getElementById("check-luminosity").onclick = function() {setGreyscaleMethod(fileInput, "luminosity");};
-    document.getElementById("check-lightness").onclick = function() {setGreyscaleMethod(fileInput, "lightness");};
-    document.getElementById("check-average").onclick = function() {setGreyscaleMethod(fileInput, "average");};
+    imgScale = -parseInt(sliderScale.value);
+    sliderScaleDisplay.innerHTML = "1:" + imgScale;
+    refresh(); 
 }
 
 let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("img-canvas");
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
 let greyScaleMethod: string = "luminosity";
-init();
+let fileInput: HTMLElement = document.getElementById("file-input");
+let imgScale: number = 1; // denominator of scale; eg imgScale==5 is a scale of 1/5
+fileInput.onchange = onUpload;
+document.getElementById("check-luminosity").onclick = function() {greyScaleMethod = "luminosity"; refresh;};
+document.getElementById("check-lightness").onclick = function() {greyScaleMethod = "lightness"; refresh;};
+document.getElementById("check-average").onclick = function() {greyScaleMethod = "average"; refresh;};
+let sliderScale: HTMLInputElement = <HTMLInputElement>document.getElementById("slider-scale");
+let sliderScaleDisplay: HTMLElement = document.getElementById("slider-scale-display");
+sliderScale.onchange = sliderChanged;
+sliderChanged();
