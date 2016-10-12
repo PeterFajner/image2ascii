@@ -75,12 +75,6 @@ function processImg(img: HTMLImageElement)
     document.getElementById("output").innerHTML = outString;
 }
 
-function setGreyscaleMethod(fileInput: HTMLElement, method: string)
-{
-    greyScaleMethod = method;
-    
-}
-
 function refresh()
 {
     let event = new Event("change");
