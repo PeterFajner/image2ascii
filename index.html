@@ -1,0 +1,31 @@
+<html>
+
+<head>
+    <title>image2ascii</title>
+    <style>
+        canvas {
+            height: 1px;
+            width: 1px;
+        }
+        
+        #output {
+            font-family: monospace;
+            font-size: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Input</h1>
+    <input type="file" accept="image/*" id="file-input">
+    <br>
+    <canvas id="img-canvas"></canvas>
+    <h1>Output</h1>
+    <div id="output"></div>
+    <footer>
+        <p><a href="https://pfaj.ca">Peter Fajner 2016</a></p>
+    </footer>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+
+</html>
