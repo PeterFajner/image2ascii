@@ -7,6 +7,8 @@ outline:
 - option to copy to clipboard?
 */
 
+declare var Clipboard: any;
+
 function onUpload(ev: Event)
 {
     // get the file
@@ -54,7 +56,7 @@ function processImg(img: HTMLImageElement)
         greyscale = greyscale * a/255; // scale based on alpha
         // convert to ascii
         let ascii: string = "";
-        if (greyscale > 240) ascii = "'";
+        if (greyscale > 240) ascii = "`";
         else if (greyscale > 200) ascii = ".";
         else if (greyscale > 150) ascii = ",";
         else if (greyscale > 100) ascii = "~";
@@ -105,3 +107,4 @@ let sliderScale: HTMLInputElement = <HTMLInputElement>document.getElementById("s
 let sliderScaleDisplay: HTMLElement = document.getElementById("slider-scale-display");
 sliderScale.onchange = sliderChanged;
 sliderChanged();
+new Clipboard('#button-clipboard');

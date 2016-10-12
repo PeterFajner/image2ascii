@@ -53,7 +53,7 @@ function processImg(img) {
         // convert to ascii
         var ascii = "";
         if (greyscale > 240)
-            ascii = "'";
+            ascii = "`";
         else if (greyscale > 200)
             ascii = ".";
         else if (greyscale > 150)
@@ -101,3 +101,4 @@ var sliderScale = document.getElementById("slider-scale");
 var sliderScaleDisplay = document.getElementById("slider-scale-display");
 sliderScale.onchange = sliderChanged;
 sliderChanged();
+new Clipboard('#button-clipboard');

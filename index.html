@@ -10,7 +10,7 @@
         
         #output {
             font-family: square;
-            font-size: 4px;
+            font-size: 2px;
         }
         
         body {
@@ -37,12 +37,14 @@
     <br>
     <canvas id="img-canvas"></canvas>
     <h1>Output</h1>
+    <button id="button-clipboard" data-clipboard-target="#output">Copy to clipboard</button>
     <div id="output"></div>
     <footer>
         <h1>Credits</h2>
             <p><a href="https://pfaj.ca">Peter Fajner 2016</a></p>
             <p>Font: "<a href="http://strlen.com/square">Square</a>" by Wouter van Oortmerssen, licensed under <a href="https://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported</a></p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
 </body>
 
